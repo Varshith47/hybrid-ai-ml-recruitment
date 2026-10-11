@@ -17,7 +17,14 @@ load_dotenv()
 # Initialize Flask app
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY', 'dev-only-change-this-before-deployment')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
+database_url = os.getenv('DATABASE_URL', 'sqlite:///users.db')
+
+if database_url.startswith('postgres://'):
+    database_url = database_url.replace(
+        'postgres://', 'postgresql://', 1
+    )
+
+app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 app.config['UPLOAD_FOLDER'] = 'uploads/'
 
 # Initialize extensions
